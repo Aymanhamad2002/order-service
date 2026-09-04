@@ -56,7 +56,8 @@ public class BookClientTests {
                             "author": "Author",
                             "price": 9.0,
                             "publisher": "Polarsophia"
-Order                        """.formatted(bookIsbn));
+                        }
+                        """.formatted(bookIsbn));
 
         mockWebServer.enqueue(mockResponse);
 
