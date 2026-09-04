@@ -33,8 +33,11 @@ spec:
             - containerPort: 9002
 
           env:
-            - name: SPRING_DATASOURCE_URL
+            - name: SPRING_FLYWAY_URL
               value: jdbc:postgresql://polar-postgres/polardb_order
+
+            - name: SPRING_R2DBC_URL
+              value: r2dbc:postgresql://polar-postgres/polardb_order
 
             - name: SPRING_CLOUD_CONFIG_URI
               value: http://config-service:8888
