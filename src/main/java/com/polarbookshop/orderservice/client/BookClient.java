@@ -20,20 +20,18 @@ public class BookClient {
         this.webClient = webClient;
     }
     
-    public Mono<BookDto> getBookByIsbn(String isbn){
-        return webClient
+public Mono<BookDto> getBookByIsbn(String isbn) {
+    return webClient
         .get()
         .uri(BOOKS_ROOT_API + isbn)
         .retrieve()
         .bodyToMono(BookDto.class)
-        .timeout(Duration.ofSeconds(5),Mono.empty())
-        .onErrorResume(WebClientResponseException.NotFound.class,exception->Mono.empty())
-        .retryWhen(
-            Retry.backoff(3, Duration.ofMillis(100))
-        ).onErrorResume(Exception.class,e -> Mono.empty())
-        ;
-
-    }
-
+        .doOnNext(book ->
+            System.out.println("BOOK FOUND: " + book)
+        )
+        .doOnError(error ->
+            System.err.println("CATALOG ERROR: " + error)
+        );
+}
 
 }
