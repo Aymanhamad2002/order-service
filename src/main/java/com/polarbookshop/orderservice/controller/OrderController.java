@@ -1,5 +1,10 @@
 package com.polarbookshop.orderservice.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,16 +16,10 @@ import jakarta.validation.Valid;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
-
 @RestController
 @RequestMapping("orders")
 public class OrderController {
+
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -28,16 +27,12 @@ public class OrderController {
     }
 
     @GetMapping
-    public Flux<Order> getOrders(){
-        return orderService.getAllOrders();
+    public Flux<Order> getOrders(@AuthenticationPrincipal Jwt jwt) {
+        return orderService.getAllOrders(jwt.getSubject());
     }
 
     @PostMapping
     public Mono<Order> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {
-        //TODO: process POST request
-        
         return orderService.submitOrder(orderRequest.isbn(), orderRequest.quantity());
     }
-    
-    
 }
