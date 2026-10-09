@@ -42,11 +42,18 @@ public class OrderService {
                 .map(book -> buildAcceptedOrder(book, quantity))
                 .defaultIfEmpty(buildRejectedOrder(isbn, quantity))
                 .flatMap(orderRepository::save)
-                .doOnNext(this::publishOrderAcceptedEvent);
+                .doOnNext(order -> log.info("Order {} saved with status {} for ISBN {} and quantity {}",
+                        order.id(), order.status(), isbn, quantity))
+                .doOnNext(this::publishOrderAcceptedEvent)
+                .doOnError(error -> log.error("Order submission failed for ISBN {} and quantity {}", isbn, quantity, error));
     }
 
     public Flux<Order> consumeOrderDispatchedEvent(Flux<OrderDispatchedMessage> flux) {
-        return flux.flatMap(message -> orderRepository.findById(message.orderId()))
+        return flux.flatMap(message -> orderRepository.findById(message.orderId())
+                        .switchIfEmpty(Mono.defer(() -> {
+                            log.warn("Dispatch event refers to missing order {}", message.orderId());
+                            return Mono.empty();
+                        })))
                 .map(this::buildDispatchedOrder)
                 .flatMap(orderRepository::save);
     }
@@ -58,7 +65,11 @@ public class OrderService {
         var orderAcceptedMessage = new OrderAcceptedMessage(order.id());
         log.info("Sending order accepted event with id: {}", order.id());
         var result = streamBridge.send("acceptOrder-out-0", orderAcceptedMessage);
-        log.info("Result of sending data for order with id {}: {}", order.id(), result);
+        if (result) {
+            log.debug("Order accepted event sent for order {}", order.id());
+        } else {
+            log.error("Order accepted event could not be sent for order {}", order.id());
+        }
     }
 
     private static Order buildAcceptedOrder(BookDto book, int quantity) {

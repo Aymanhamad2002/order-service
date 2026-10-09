@@ -1,12 +1,15 @@
+# Build
 custom_build(
-    ref='order-service',
-    command='gradlew.bat bootBuildImage --imageName=%EXPECTED_REF%',
-    deps=['build.gradle', 'src']
+    # Name of the container image
+    ref = 'order-service',
+    # Command to build the container image
+    command = 'gradlew.bat bootBuildImage --imageName "%EXPECTED_REF%"',
+    # Files to watch that trigger a new build
+    deps = ['build.gradle', 'settings.gradle', 'gradlew.bat', 'gradle', 'src']
 )
 
-k8s_yaml(['k8s/deployment.yml', 'k8s/service.yml'])
+# Deploy
+k8s_yaml(kustomize('k8s'))
 
-k8s_resource(
-    'order-service',
-    port_forwards=[9002]
-)
+# Manage
+k8s_resource('order-service', port_forwards=['9002'])

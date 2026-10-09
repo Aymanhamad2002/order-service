@@ -1,5 +1,7 @@
 package com.polarbookshop.orderservice.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,8 @@ import reactor.core.publisher.Mono;
 @RequestMapping("orders")
 public class OrderController {
 
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
+
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -28,11 +32,14 @@ public class OrderController {
 
     @GetMapping
     public Flux<Order> getOrders(@AuthenticationPrincipal Jwt jwt) {
+        log.info("Received request to fetch orders for the authenticated user");
         return orderService.getAllOrders(jwt.getSubject());
     }
 
     @PostMapping
     public Mono<Order> submitOrder(@RequestBody @Valid OrderRequest orderRequest) {
+        log.info("Received order submission for ISBN {} and quantity {}",
+                orderRequest.isbn(), orderRequest.quantity());
         return orderService.submitOrder(orderRequest.isbn(), orderRequest.quantity());
     }
 }

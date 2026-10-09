@@ -13,6 +13,10 @@ java {
 	}
 }
 
+ext {
+	set('otelVersion', '1.17.0')
+}
+
 repositories {
 	mavenCentral()
 }
@@ -24,6 +28,7 @@ dependencyManagement {
 }
 
 dependencies {
+	runtimeOnly "io.opentelemetry.javaagent:opentelemetry-javaagent:${otelVersion}"
 	implementation'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
 	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
@@ -31,6 +36,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework:spring-jdbc'
 	implementation 'org.springframework.boot:spring-boot-webclient'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 	
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'

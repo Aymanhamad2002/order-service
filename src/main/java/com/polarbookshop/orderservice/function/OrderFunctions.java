@@ -22,7 +22,7 @@ public class OrderFunctions {
         return flux ->
             orderService.consumeOrderDispatchedEvent(flux)
                         .doOnNext(order -> log.info("The order with id {} is dispatched",order.id()))
-                        .subscribe();
+                        .subscribe(order -> {}, error -> log.error("Order dispatch stream failed", error));
 
     }
 }

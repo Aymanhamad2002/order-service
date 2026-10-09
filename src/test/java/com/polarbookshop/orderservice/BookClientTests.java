@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.polarbookshop.orderservice.client.BookClient;
 import com.polarbookshop.orderservice.dto.BookDto;
@@ -37,6 +38,21 @@ public class BookClientTests {
     @AfterEach
     void clean() throws IOException {
         this.mockWebServer.shutdown();
+    }
+
+    @Test
+    void whenBookMissingThenReturnEmpty() {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
+        StepVerifier.create(bookClient.getBookByIsbn("1234567890"))
+                .verifyComplete();
+    }
+
+    @Test
+    void whenCatalogFailsThenPropagateError() {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+        StepVerifier.create(bookClient.getBookByIsbn("1234567890"))
+                .expectError(WebClientResponseException.InternalServerError.class)
+                .verify();
     }
 
     @Test

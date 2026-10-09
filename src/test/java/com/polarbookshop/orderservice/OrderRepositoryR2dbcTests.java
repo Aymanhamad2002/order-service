@@ -3,6 +3,8 @@ package com.polarbookshop.orderservice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -18,6 +20,7 @@ import com.polarbookshop.orderservice.service.OrderService;
 import reactor.test.StepVerifier;
 
 @DataR2dbcTest
+@ImportAutoConfiguration(FlywayAutoConfiguration.class)
 @Import(DataConfig.class)
 @Testcontainers
 class OrderRepositoryR2dbcTests {
