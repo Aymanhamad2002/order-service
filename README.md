@@ -52,9 +52,6 @@ Flyway uses JDBC separately from the R2DBC connection. Override both URLs when c
 | [catalog-service](https://github.com/Aymanhamad2002/catalog-service) | Book catalog and PostgreSQL persistence |
 | [order-service](https://github.com/Aymanhamad2002/order-service) | Orders and asynchronous dispatch tracking |
 | [dispatcher-service](https://github.com/Aymanhamad2002/dispatcher-service) | Event-driven packing and labeling |
-| [polar-deployment](https://github.com/Aymanhamad2002/polar-deployment) | Docker Compose, Kubernetes, and observability configuration |
-| [config-service](https://github.com/Aymanhamad2002/config-service) | Spring Cloud Config server |
-| [config-repo](https://github.com/Aymanhamad2002/config-repo) | Shared application configuration |
 
 ## Build and test
 
